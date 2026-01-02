@@ -18,19 +18,27 @@
         <div class="modal-content">
             <h3>🎁 Бонус найден!</h3>
             <p>Награда: <span id="reward-text" class="reward-highlight">???</span></p>
-            
             <p style="margin: 10px 0; font-weight: bold; color: #fff;">
                 Нужно посмотреть реклам: <span id="ads-counter" style="color: #4caf50;">0/0</span>
             </p>
-
-            <p style="font-size: 0.8rem; color: #aaa;">Нажмите кнопку и дождитесь проверки.</p>
-            
             <button id="watch-ad-btn" style="background-color: #4caf50;">Смотреть рекламу</button>
             <button id="close-modal-btn" class="secondary-btn" style="background-color: #f44336;">Отказаться</button>
         </div>
     </div>
 
-    <div class="container">
+    <div id="shop-modal" class="shop-modal-overlay">
+        <div class="shop-content">
+            <div class="shop-header">
+                <h2 style="margin:0; color:#ff9800;">🍪 Магазин</h2>
+                <button id="close-shop-btn" class="close-shop-btn">×</button>
+            </div>
+            <div id="shop-list" class="shop-list-scroll">
+                <p>Загрузка товаров...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-container" class="container">
         <div id="user-info" style="font-size: 0.8rem; color: #888;">Загрузка...</div>
         
         <div id="money-display">$0.00</div>
@@ -38,24 +46,22 @@
         
         <button id="click-btn">КЛИК</button>
         
-        <div class="tabs">
-            <h3>🍪 Магазин Печенек</h3>
-            <div id="shop-list" class="shop-container">
-                <p>Загрузка магазина...</p>
-            </div>
-        </div>
-
-        <div class="tabs">
-            <h3>Задания</h3>
-            <p>В разработке...</p>
-        </div>
-        
-        <div class="ad-container">
-            <script async="async" data-cfasync="false" src="https://pl28384763.effectivegatecpm.com/4f46afbe5794b0570feb06a1295424d5/invoke.js"></script>
-            <div id="container-4f46afbe5794b0570feb06a1295424d5"></div>
-        </div>
+        <button id="open-shop-btn" class="shop-open-btn">🛒 Открыть Магазин</button>
 
         <button id="logoutBtn" class="logout-btn">Выйти</button>
+    </div>
+
+    <div class="bottom-banner-container">
+        <script>
+          atOptions = {
+            'key' : 'ba5b233760526a810caa77cf17293467',
+            'format' : 'iframe',
+            'height' : 90,
+            'width' : 728,
+            'params' : {}
+          };
+        </script>
+        <script src="https://www.highperformanceformat.com/ba5b233760526a810caa77cf17293467/invoke.js"></script>
     </div>
 
     <script type="module">
@@ -87,14 +93,16 @@
         let clickPower = 0.01; 
         let userId = null;
         let isCooldown = false;
+        
+        // НОВЫЕ ПЕРЕМЕННЫЕ СОСТОЯНИЯ
         let ownedUpgrades = []; 
+        let equippedItem = "none"; // ID надетого предмета
 
         let adsRequired = 0;
         let adsWatchedCount = 0;
         let currentReward = null;
         let balloonTimerInterval = null;
 
-        // Флаг полной загрузки (чтобы не багать деньги)
         let isDataLoaded = false;
         let isInitialLoadDone = false;
 
@@ -113,27 +121,24 @@
                             return;
                         }
                         
-                        // Загружаем данные
                         currentMoney = parseFloat(data.money) || 0;
                         ownedUpgrades = data.upgrades || ["start"];
+                        equippedItem = data.equipped || "none"; // Читаем что надето
                         
                         recalcClickPower();
                         updateDisplay();
-                        renderShop();
+                        renderShop(); // Перерисовываем магазин при любом изменении
 
-                        // Логика отключения загрузочного экрана
-                        // Ждем минимум 1.5 секунды для красоты и безопасности
                         if (!isInitialLoadDone) {
-                            isInitialLoadDone = true; // Данные пришли первый раз
-                            
+                            isInitialLoadDone = true; 
                             setTimeout(() => {
-                                isDataLoaded = true; // Разрешаем кликать
+                                isDataLoaded = true;
                                 const loader = document.getElementById('loading-overlay');
                                 if (loader) {
                                     loader.style.opacity = '0';
                                     setTimeout(() => loader.remove(), 500);
                                 }
-                            }, 1500); // 1.5 секунды задержка загрузки
+                            }, 1500);
                         }
                     }
                 });
@@ -144,19 +149,25 @@
             }
         });
 
+        // --- ЛОГИКА СИЛЫ КЛИКА ---
         function recalcClickPower() {
-            let maxPower = 0.01; 
-            SHOP_ITEMS.forEach(item => {
-                if (ownedUpgrades.includes(item.id)) {
-                    if (item.power > maxPower) maxPower = item.power;
-                }
-            });
-            clickPower = maxPower;
+            // Если ничего не надето - сила 0.01
+            if (equippedItem === "none" || equippedItem === "start") {
+                clickPower = 0.01;
+                return;
+            }
+
+            // Ищем надетый предмет в базе магазина
+            const item = SHOP_ITEMS.find(i => i.id === equippedItem);
+            if (item) {
+                clickPower = item.power;
+            } else {
+                clickPower = 0.01; // Если предмет не найден
+            }
         }
 
         const clickBtn = document.getElementById('click-btn');
         clickBtn.addEventListener('click', () => {
-            // ВАЖНО: Если данные не загрузились, клик не работает!
             if (!userId || isCooldown || !isDataLoaded) return;
 
             isCooldown = true;
@@ -177,36 +188,75 @@
             document.getElementById('cpc-display').innerText = 'За клик: $' + clickPower.toFixed(2);
         }
 
+        // --- НОВЫЙ МАГАЗИН ---
+        const shopModal = document.getElementById('shop-modal');
+        const mainContainer = document.getElementById('main-container');
+
+        // Открытие
+        document.getElementById('open-shop-btn').addEventListener('click', () => {
+            shopModal.classList.add('open');
+            mainContainer.classList.add('blur-content'); // Размываем фон
+        });
+
+        // Закрытие
+        document.getElementById('close-shop-btn').addEventListener('click', () => {
+            shopModal.classList.remove('open');
+            mainContainer.classList.remove('blur-content'); // Убираем размытие
+        });
+
         function renderShop() {
             const list = document.getElementById('shop-list');
             list.innerHTML = ""; 
 
             SHOP_ITEMS.forEach(item => {
                 const isOwned = ownedUpgrades.includes(item.id);
-                const el = document.createElement('div');
-                el.className = "shop-item " + (isOwned ? "owned" : "");
+                const isEquipped = (equippedItem === item.id);
                 
+                const el = document.createElement('div');
+                // Добавляем класс, если надето, для подсветки
+                el.className = "shop-item " + (isEquipped ? "equipped" : "");
+                
+                // Генерируем HTML
+                let buttonHtml = '';
+                
+                if (isEquipped) {
+                    buttonHtml = `<button class="shop-action-btn btn-equipped">Надето</button>`;
+                } else if (isOwned) {
+                    buttonHtml = `<button class="shop-action-btn btn-equip" data-action="equip" data-id="${item.id}">Надеть</button>`;
+                } else {
+                    buttonHtml = `<button class="shop-action-btn btn-buy" data-action="buy" data-id="${item.id}">Купить ($${item.price})</button>`;
+                }
+
                 el.innerHTML = `
                     <div class="item-info">
                         <h4>${item.name}</h4>
                         <p>Клик: $${item.power.toFixed(2)}</p>
                     </div>
-                    <button class="buy-btn ${isOwned ? 'owned' : ''}" data-id="${item.id}">
-                        ${isOwned ? 'Куплено' : '$' + item.price}
-                    </button>
+                    ${buttonHtml}
                 `;
                 
-                const btn = el.querySelector('.buy-btn');
-                if (!isOwned) {
+                // Вешаем обработчики на кнопки
+                const btn = el.querySelector('button');
+                if (btn.dataset.action === "buy") {
                     btn.addEventListener('click', () => buyItem(item));
+                } else if (btn.dataset.action === "equip") {
+                    btn.addEventListener('click', () => equipItem(item.id));
                 }
                 
                 list.appendChild(el);
             });
+            
+            // Кнопка "Снять всё" (для теста или если хочется дефолтный клик)
+            const unequipDiv = document.createElement('div');
+            unequipDiv.style.textAlign = "center";
+            unequipDiv.style.marginTop = "10px";
+            unequipDiv.innerHTML = `<button class="shop-action-btn secondary-btn" style="width:100%">Снять экипировку</button>`;
+            unequipDiv.querySelector('button').addEventListener('click', () => equipItem("none"));
+            list.appendChild(unequipDiv);
         }
 
         function buyItem(item) {
-            if (!isDataLoaded) return; // Защита покупки
+            if (!isDataLoaded) return;
             if (currentMoney >= item.price) {
                 currentMoney -= item.price;
                 let newUpgrades = [...ownedUpgrades, item.id];
@@ -214,21 +264,26 @@
                 updates['/users/' + userId + '/money'] = parseFloat(currentMoney.toFixed(2));
                 updates['/users/' + userId + '/upgrades'] = newUpgrades;
                 update(ref(db), updates);
-                alert(`Вы купили ${item.name}!`);
+                // После покупки можно сразу предложить надеть, но пока оставим ручное
             } else {
                 alert("Недостаточно денег!");
             }
         }
 
+        // Новая функция экипировки
+        function equipItem(itemId) {
+            if (!isDataLoaded) return;
+            // Просто обновляем поле equipped в базе данных
+            update(ref(db, 'users/' + userId), {
+                equipped: itemId
+            });
+        }
+
         // --- ЛОГИКА ТАЙМЕРА И ШАРИКОВ ---
-        
         function startBalloonSpawner() {
             if (balloonTimerInterval) clearInterval(balloonTimerInterval);
-
-            // Таймер от 60 до 180 секунд
             const waitTime = Math.floor(Math.random() * (180000 - 60000) + 60000);
             const targetTime = Date.now() + waitTime;
-            
             console.log("%c🎁 Таймер запущен!", "color: yellow; font-weight: bold;");
 
             balloonTimerInterval = setInterval(() => {
@@ -252,12 +307,9 @@
             balloon.className = "bonus-balloon";
             const randomLeft = Math.random() * 70 + 10;
             balloon.style.left = randomLeft + "%";
-            
             let topPos = -100;
             const speed = 2 + Math.random() * 2; 
-            
             document.body.appendChild(balloon);
-            
             const animInterval = setInterval(() => {
                 topPos += speed;
                 balloon.style.top = topPos + "px";
@@ -266,7 +318,6 @@
                     balloon.remove();
                 }
             }, 20);
-
             balloon.addEventListener('click', () => {
                 clearInterval(animInterval);
                 balloon.remove();
@@ -296,11 +347,8 @@
                 }
             }
 
-            if (rewardType === "money" && rewardValue <= 1.00) {
-                adsRequired = 1;
-            } else {
-                adsRequired = 2;
-            }
+            if (rewardType === "money" && rewardValue <= 1.00) adsRequired = 1;
+            else adsRequired = 2;
             
             adsWatchedCount = 0;
             updateAdModalUI();
@@ -310,13 +358,9 @@
         function updateAdModalUI() {
             document.getElementById('reward-text').innerText = currentReward.text;
             document.getElementById('ads-counter').innerText = `${adsWatchedCount}/${adsRequired}`;
-            
             const btn = document.getElementById('watch-ad-btn');
-            if (adsWatchedCount > 0 && adsWatchedCount < adsRequired) {
-                btn.innerText = "Смотреть следующую";
-            } else {
-                btn.innerText = "Смотреть рекламу";
-            }
+            if (adsWatchedCount > 0 && adsWatchedCount < adsRequired) btn.innerText = "Смотреть следующую";
+            else btn.innerText = "Смотреть рекламу";
         }
 
         document.getElementById('close-modal-btn').addEventListener('click', () => {
@@ -325,16 +369,12 @@
 
         document.getElementById('watch-ad-btn').addEventListener('click', () => {
             window.open(AD_LINK, '_blank');
-            
             const btn = document.getElementById('watch-ad-btn');
-            const originalText = btn.innerText;
             btn.innerText = "Проверка...";
             btn.disabled = true;
-
             setTimeout(() => {
                 adsWatchedCount++;
                 btn.disabled = false;
-                
                 if (adsWatchedCount >= adsRequired) {
                     giveReward();
                     document.getElementById('ad-modal').classList.remove('active');
