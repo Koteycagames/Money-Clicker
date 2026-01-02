@@ -1,4 +1,62 @@
-/* ... старый код выше ... */
+body {
+    background-color: #121212;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background-color: #1e1e1e;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    text-align: center;
+    width: 300px;
+}
+
+input {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #333;
+    background-color: #2c2c2c;
+    color: white;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    background-color: #4caf50;
+    color: white;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.secondary-btn {
+    background-color: #2196F3;
+    margin-top: 5px;
+}
+
+.logout-btn {
+    background-color: #f44336;
+    margin-top: 20px;
+}
+
+/* --- СТИЛИ ДЛЯ КЛИКЕРА --- */
 
 #money-display {
     font-size: 2.5rem;
@@ -7,54 +65,65 @@
     font-family: 'Courier New', monospace;
 }
 
-/* ОБНОВЛЕННЫЙ СТИЛЬ КНОПКИ */
+/* Кнопка с анимацией заполнения */
 #click-btn {
     width: 150px;
     height: 150px;
     border-radius: 50%;
     
-    /* Базовый цвет (когда кнопка "пустая/серая") */
+    /* Цвет фона, который виден, когда "заряд" на нуле (серый) */
     background-color: #555555; 
     
-    /* Зеленая "заливка", которая будет меняться */
+    /* Зеленый градиент, который мы будем анимировать */
     background-image: linear-gradient(to top, #4caf50, #2e7d32);
     background-repeat: no-repeat;
-    background-position: bottom;
-    /* Изначально кнопка полностью зеленая */
-    background-size: 100% 100%;
+    background-position: bottom; /* Растет снизу */
+    background-size: 100% 100%; /* По умолчанию полная (зеленая) */
 
     font-size: 1.2rem;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Немного изменил тень */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     border: 4px solid #fff;
     color: white;
     
-    /* Чтобы текст не выделялся при быстрых кликах */
+    /* Запрет выделения текста при кликах */
     user-select: none; 
     -webkit-user-select: none;
-    transition: transform 0.1s;
+    
+    /* Плавность нажатия */
+    transition: transform 0.1s; 
+    cursor: pointer;
 }
 
 #click-btn:active {
     transform: scale(0.95);
 }
 
-/* КЛАСС ДЛЯ АНИМАЦИИ (добавляется JS-ом) */
+/* Класс, который вешается скриптом на 1 секунду */
 .cooldown {
-    /* Блокируем клики, пока идет анимация */
-    pointer-events: none;
+    pointer-events: none; /* Нельзя кликнуть */
     cursor: not-allowed;
-    /* Запуск анимации на 1 секунду */
-    animation: fillUp 1s linear forwards;
+    animation: fillUp 1s linear forwards; /* Запуск анимации */
 }
 
-/* Сама анимация наполнения снизу вверх */
+/* Анимация роста зеленого фона от 0% до 100% */
 @keyframes fillUp {
     0% {
-        background-size: 100% 0%; /* 0% высоты (кнопка серая) */
+        background-size: 100% 0%; /* Кнопка серая */
     }
     100% {
-        background-size: 100% 100%; /* 100% высоты (кнопка зеленая) */
+        background-size: 100% 100%; /* Кнопка зеленая */
     }
 }
 
-/* ... старый код ниже (tabs, ad-container и т.д.) ... */
+.tabs {
+    margin-top: 20px;
+    padding: 10px;
+    background: #252525;
+    border-radius: 8px;
+    color: #888;
+}
+
+.ad-container {
+    margin-top: 20px;
+    min-height: 50px;
+}
