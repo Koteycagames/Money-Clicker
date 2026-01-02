@@ -41,54 +41,65 @@
 
         let currentMoney = 0.00;
         let userId = null;
+        let isCooldown = false; // Флаг: true, если идет перезарядка
 
-        // Проверка авторизации
+        // Проверка входа
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 userId = user.uid;
                 document.getElementById('user-info').innerText = "ID: " + user.email;
                 
-                // Слушаем изменения данных игрока
                 const userRef = ref(db, 'users/' + userId);
                 onValue(userRef, (snapshot) => {
                     const data = snapshot.val();
                     if (data) {
-                        // Проверка на БАН
+                        // Если забанен
                         if (data.banned && data.banned !== false) {
                             window.location.href = "ban.html";
                             return;
                         }
-
+                        
+                        // Получаем деньги (если мы не кликали сами только что, это синхронизирует счет)
                         currentMoney = parseFloat(data.money) || 0;
                         updateDisplay();
                     }
                 });
-
             } else {
                 window.location.href = "index.html";
             }
         });
 
-        // Логика клика
-        document.getElementById('click-btn').addEventListener('click', () => {
-            if (!userId) return;
+        const clickBtn = document.getElementById('click-btn');
 
-            // Добавляем 1 цент
-            currentMoney += 0.01;
+        // Обработчик клика
+        clickBtn.addEventListener('click', () => {
+            // Если нет ID или уже идет перезарядка — выходим
+            if (!userId || isCooldown) return;
+
+            // 1. Блокируем кнопку
+            isCooldown = true;
             
-            // Сразу обновляем экран (для плавности)
+            // 2. Добавляем класс анимации (кнопка станет серой и начнет зеленеть)
+            clickBtn.classList.add('cooldown');
+
+            // 3. Начисляем деньги
+            currentMoney += 0.01;
             updateDisplay();
 
-            // Сохраняем в Firebase
-            // .toFixed(2) возвращает строку, поэтому оборачиваем в parseFloat для сохранения числа
+            // 4. Сохраняем в БД
             set(ref(db, 'users/' + userId + '/money'), parseFloat(currentMoney.toFixed(2)));
+
+            // 5. Ждем 1 секунду (1000 мс)
+            setTimeout(() => {
+                isCooldown = false; // Снимаем блокировку
+                clickBtn.classList.remove('cooldown'); // Убираем анимацию (кнопка снова полностью зеленая)
+            }, 1000);
         });
 
         function updateDisplay() {
             document.getElementById('money-display').innerText = '$' + currentMoney.toFixed(2);
         }
 
-        // Выход
         document.getElementById('logoutBtn').addEventListener('click', () => {
             signOut(auth).then(() => {
                 window.location.href = "index.html";
