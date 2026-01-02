@@ -25,6 +25,12 @@ body {
     align-items: center;
     transition: opacity 0.5s ease;
 }
+/* Если оверлей прозрачный, сквозь него можно кликать */
+#loading-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
 .loader-spinner {
     border: 5px solid #333;
     border-top: 5px solid #4caf50;
@@ -126,17 +132,14 @@ body {
 .menu-btn span { font-size: 1.5rem; margin-bottom: 2px; }
 .menu-btn:hover { transform: scale(1.05); border-color: #ff9800; }
 
-/* ЦЕНТРАЛЬНАЯ КНОПКА */
-.center-stage {
+/* --- ГЛАВНАЯ КНОПКА (ИСПРАВЛЕНО) --- */
+#click-btn {
     position: absolute;
     top: 50%;
     left: 50%;
+    /* Центрирование */
     transform: translate(-50%, -50%);
-    z-index: 5;
-    /* Убрал лишние стили, позиционирование делает родитель */
-}
-
-#click-btn {
+    
     width: 220px;
     height: 220px;
     border-radius: 50%;
@@ -155,13 +158,15 @@ body {
     cursor: pointer;
     font-weight: bold;
     text-transform: uppercase;
+    z-index: 5;
 }
 
-/* --- ВОТ ЗДЕСЬ БЫЛА ОШИБКА, ТЕПЕРЬ ИСПРАВЛЕНО --- */
+/* ВАЖНОЕ ИСПРАВЛЕНИЕ: сохраняем translate при клике */
 #click-btn:active {
-    transform: scale(0.95); /* Убрали translate, теперь просто уменьшается */
+    transform: translate(-50%, -50%) scale(0.95);
 }
 
+/* Анимация кулдауна */
 .cooldown {
     pointer-events: none;
     cursor: not-allowed;
