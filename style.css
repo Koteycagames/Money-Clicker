@@ -2,13 +2,12 @@ body {
     background-color: #121212;
     color: #e0e0e0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
     margin: 0;
-    overflow: hidden; /* Чтобы скролл был только внутри контейнеров */
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden; /* Запрещаем скролл всей страницы */
+    position: relative;
 }
 
 /* --- ЗАГРУЗКА --- */
@@ -36,116 +35,246 @@ body {
     animation: spin 1s linear infinite;
     margin-bottom: 20px;
 }
-
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* --- ОСНОВНОЙ КОНТЕЙНЕР --- */
-.container {
-    background-color: #1e1e1e;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    text-align: center;
-    width: 350px;
-    /* Убираем жесткую высоту, чтобы влазил баннер */
-    z-index: 10;
-    position: relative;
-    transition: filter 0.3s; /* Плавное размытие */
-}
-
-/* Класс для размытия фона когда открыт магазин */
-.blur-content {
-    filter: blur(8px);
-    pointer-events: none; /* Запрещаем кликать сквозь размытие */
-}
-
-/* --- КНОПКИ И ИНПУТЫ --- */
-button {
+/* --- ИНТЕРФЕЙС (HUD) --- */
+/* Размытие применяется к этому блоку, когда открыты модалки */
+#game-ui {
     width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    background-color: #4caf50;
-    color: white;
-    font-weight: bold;
-    font-size: 1rem;
-    transition: 0.2s;
+    height: 100%;
+    position: relative;
+    transition: filter 0.3s;
 }
 
-button:hover { background-color: #45a049; }
-button:active { transform: scale(0.98); }
-
-.shop-open-btn {
-    background-color: #ff9800; /* Оранжевая кнопка магазина */
-    margin-top: 20px;
+.blur-active {
+    filter: blur(8px);
+    pointer-events: none;
 }
 
-.secondary-btn { background-color: #2196F3; }
-.logout-btn { background-color: #f44336; margin-top: 20px; }
+/* ВЕРХНЯЯ ПАНЕЛЬ (ДЕНЬГИ) */
+.top-bar {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px 20px;
+    border-radius: 30px;
+    border: 1px solid #333;
+}
 
-/* --- КЛИКЕР --- */
 #money-display {
-    font-size: 2.5rem;
+    font-size: 2rem;
     color: #ffd700;
-    margin: 20px 0;
     font-family: 'Courier New', monospace;
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+    margin: 0;
+}
+
+.plus-btn {
+    width: 35px;
+    height: 35px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+    transition: 0.2s;
+}
+.plus-btn:hover { transform: scale(1.1); background-color: #45a049; }
+
+#cpc-display {
+    position: absolute;
+    top: 75px; /* Чуть ниже денег */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    color: #aaa;
+}
+
+/* ЛЕВАЯ ПАНЕЛЬ (МЕНЮ) */
+.left-sidebar {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 10;
+}
+
+.menu-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    border: 2px solid #444;
+    background-color: #1e1e1e;
+    color: white;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+.menu-btn span { font-size: 1.5rem; margin-bottom: 2px; } /* Иконка */
+.menu-btn:hover { transform: scale(1.05); border-color: #ff9800; }
+
+/* ЦЕНТРАЛЬНАЯ КНОПКА */
+.center-stage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
 }
 
 #click-btn {
-    width: 160px;
-    height: 160px;
+    width: 220px;
+    height: 220px;
     border-radius: 50%;
     background-color: #555; 
     background-image: linear-gradient(to top, #4caf50, #2e7d32);
     background-repeat: no-repeat;
     background-position: bottom;
     background-size: 100% 100%;
-    font-size: 1.2rem;
-    box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
-    border: 5px solid #fff;
+    font-size: 1.5rem;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+    border: 8px solid #fff;
     color: white;
     user-select: none; 
     -webkit-user-select: none;
     transition: transform 0.1s; 
     cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
 }
-
-#click-btn:active { transform: scale(0.95); }
+#click-btn:active { transform: translate(-50%, -50%) scale(0.95); } /* Фикс центровки при клике */
 
 .cooldown {
     pointer-events: none;
     cursor: not-allowed;
     animation: fillUp 1s linear forwards;
 }
-
 @keyframes fillUp { 0% { background-size: 100% 0%; } 100% { background-size: 100% 100%; } }
 
-/* --- МОДАЛЬНОЕ ОКНО МАГАЗИНА (НОВОЕ) --- */
-.shop-modal-overlay {
+/* НИЖНИЙ ЛЕВЫЙ УГОЛ (ВЫХОД) */
+.bottom-left {
+    position: absolute;
+    bottom: 20px; /* Выше баннера */
+    left: 20px;
+    z-index: 20; /* Поверх баннера если что */
+}
+
+.logout-btn-small {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: 0.2s;
+}
+.logout-btn-small:hover { opacity: 1; }
+
+/* НИЖНИЙ БАННЕР */
+.bottom-banner-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    background: rgba(0,0,0,0.8);
+    z-index: 15;
+    padding-top: 5px;
+}
+
+/* --- ОБЩИЕ МОДАЛЬНЫЕ ОКНА --- */
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6); /* Темный фон */
-    z-index: 5000;
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
-    opacity: 0;
+    z-index: 5000;
     visibility: hidden;
+    opacity: 0;
     transition: 0.3s;
 }
+.modal-overlay.open { visibility: visible; opacity: 1; }
 
-.shop-modal-overlay.open {
-    opacity: 1;
-    visibility: visible;
+.modal-content {
+    background: #252525;
+    width: 320px;
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid #444;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    position: relative;
 }
 
-.shop-content {
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+.close-btn:hover { color: white; }
+
+/* СТИЛИ ДЛЯ СПИСКА ПОКУПКИ ДЕНЕГ */
+.exchange-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+.exchange-item {
+    background: #1e1e1e;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.exchange-item:hover { background: #2a2a2a; border-color: #4caf50; }
+.exchange-reward { font-weight: bold; color: #ffd700; }
+.exchange-cost { font-size: 0.8rem; color: #aaa; }
+
+/* Процесс просмотра */
+.watch-process { display: none; margin-top: 20px; }
+.watch-process.active { display: block; }
+.timer-text { color: #ff9800; font-weight: bold; margin: 10px 0; }
+
+/* МАГАЗИН (Оставляем похожим, но адаптируем) */
+.shop-modal-content {
     background: #252525;
     width: 90%;
     max-width: 400px;
@@ -154,70 +283,19 @@ button:active { transform: scale(0.98); }
     padding: 20px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 0 30px rgba(0,0,0,0.8);
     border: 1px solid #444;
 }
+.shop-list-scroll { flex-grow: 1; overflow-y: auto; margin-top: 10px; }
+.shop-item { background: #1e1e1e; padding: 12px; border-radius: 8px; border: 1px solid #333; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.shop-item.equipped { border-color: #4caf50; background: #1a331a; }
+.shop-item h4 { margin: 0; color: white; font-size: 0.9rem; }
+.shop-item p { margin: 0; color: #aaa; font-size: 0.7rem; }
+.action-btn { padding: 5px 10px; border: none; border-radius: 5px; cursor: pointer; color: white; font-size: 0.8rem; }
+.btn-buy { background: #ff9800; }
+.btn-equip { background: #2196F3; }
+.btn-equipped { background: #4caf50; cursor: default; }
 
-.shop-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #444;
-    padding-bottom: 10px;
-}
-
-.close-shop-btn {
-    background: transparent;
-    color: #aaa;
-    width: auto;
-    margin: 0;
-    padding: 5px;
-    font-size: 1.5rem;
-}
-.close-shop-btn:hover { background: transparent; color: white; }
-
-.shop-list-scroll {
-    flex-grow: 1;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #555 #252525;
-    padding-right: 5px;
-}
-
-/* Элемент магазина */
-.shop-item {
-    background-color: #1e1e1e;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #333;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.shop-item.equipped {
-    border-color: #4caf50;
-    background-color: #1a331a;
-}
-
-.item-info h4 { margin: 0; font-size: 0.95rem; color: #fff; }
-.item-info p { margin: 3px 0 0; font-size: 0.75rem; color: #aaa; }
-
-.shop-action-btn {
-    width: auto;
-    padding: 6px 12px;
-    font-size: 0.8rem;
-    margin: 0;
-}
-
-/* Цвета кнопок магазина */
-.btn-buy { background-color: #ff9800; }
-.btn-equip { background-color: #2196F3; }
-.btn-equipped { background-color: #4caf50; cursor: default; opacity: 0.8; }
-
-/* --- ПАДАЮЩИЙ ШАРИК --- */
+/* ПАДАЮЩИЙ ШАРИК */
 .bonus-balloon {
     position: absolute;
     width: 60px;
@@ -235,40 +313,3 @@ button:active { transform: scale(0.98); }
     top: -100px;
 }
 .bonus-balloon::after { content: "🎁"; }
-
-/* --- МОДАЛЬНОЕ ОКНО РЕКЛАМЫ (МАЛЕНЬКОЕ) --- */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 6000; /* Выше магазина */
-    visibility: hidden;
-    opacity: 0;
-    transition: 0.3s;
-}
-.modal-overlay.active { visibility: visible; opacity: 1; }
-.modal-content {
-    background: #222;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    border: 1px solid #444;
-    width: 300px;
-}
-
-/* --- НИЖНИЙ БАННЕР --- */
-.bottom-banner-container {
-    margin-top: 20px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    background: transparent;
-    z-index: 5;
-    padding-bottom: 10px;
-}
