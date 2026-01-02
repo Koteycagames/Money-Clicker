@@ -6,11 +6,11 @@ body {
     padding: 0;
     width: 100vw;
     height: 100vh;
-    overflow: hidden; /* Запрещаем скролл всей страницы */
+    overflow: hidden;
     position: relative;
 }
 
-/* --- ЗАГРУЗКА --- */
+/* ЗАГРУЗКА */
 #loading-overlay {
     position: fixed;
     top: 0;
@@ -25,7 +25,6 @@ body {
     align-items: center;
     transition: opacity 0.5s ease;
 }
-
 .loader-spinner {
     border: 5px solid #333;
     border-top: 5px solid #4caf50;
@@ -37,21 +36,19 @@ body {
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* --- ИНТЕРФЕЙС (HUD) --- */
-/* Размытие применяется к этому блоку, когда открыты модалки */
+/* ИНТЕРФЕЙС */
 #game-ui {
     width: 100%;
     height: 100%;
     position: relative;
     transition: filter 0.3s;
 }
-
 .blur-active {
     filter: blur(8px);
     pointer-events: none;
 }
 
-/* ВЕРХНЯЯ ПАНЕЛЬ (ДЕНЬГИ) */
+/* ВЕРХНЯЯ ПАНЕЛЬ */
 .top-bar {
     position: absolute;
     top: 20px;
@@ -66,7 +63,6 @@ body {
     border-radius: 30px;
     border: 1px solid #333;
 }
-
 #money-display {
     font-size: 2rem;
     color: #ffd700;
@@ -74,7 +70,6 @@ body {
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
     margin: 0;
 }
-
 .plus-btn {
     width: 35px;
     height: 35px;
@@ -92,17 +87,16 @@ body {
     transition: 0.2s;
 }
 .plus-btn:hover { transform: scale(1.1); background-color: #45a049; }
-
 #cpc-display {
     position: absolute;
-    top: 75px; /* Чуть ниже денег */
+    top: 75px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 0.9rem;
     color: #aaa;
 }
 
-/* ЛЕВАЯ ПАНЕЛЬ (МЕНЮ) */
+/* ЛЕВАЯ ПАНЕЛЬ */
 .left-sidebar {
     position: absolute;
     left: 20px;
@@ -113,7 +107,6 @@ body {
     gap: 15px;
     z-index: 10;
 }
-
 .menu-btn {
     width: 60px;
     height: 60px;
@@ -130,7 +123,7 @@ body {
     justify-content: center;
     box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
-.menu-btn span { font-size: 1.5rem; margin-bottom: 2px; } /* Иконка */
+.menu-btn span { font-size: 1.5rem; margin-bottom: 2px; }
 .menu-btn:hover { transform: scale(1.05); border-color: #ff9800; }
 
 /* ЦЕНТРАЛЬНАЯ КНОПКА */
@@ -140,6 +133,7 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 5;
+    /* Убрал лишние стили, позиционирование делает родитель */
 }
 
 #click-btn {
@@ -162,7 +156,11 @@ body {
     font-weight: bold;
     text-transform: uppercase;
 }
-#click-btn:active { transform: translate(-50%, -50%) scale(0.95); } /* Фикс центровки при клике */
+
+/* --- ВОТ ЗДЕСЬ БЫЛА ОШИБКА, ТЕПЕРЬ ИСПРАВЛЕНО --- */
+#click-btn:active {
+    transform: scale(0.95); /* Убрали translate, теперь просто уменьшается */
+}
 
 .cooldown {
     pointer-events: none;
@@ -171,14 +169,13 @@ body {
 }
 @keyframes fillUp { 0% { background-size: 100% 0%; } 100% { background-size: 100% 100%; } }
 
-/* НИЖНИЙ ЛЕВЫЙ УГОЛ (ВЫХОД) */
+/* НИЖНИЙ ЛЕВЫЙ УГОЛ */
 .bottom-left {
     position: absolute;
-    bottom: 20px; /* Выше баннера */
+    bottom: 20px;
     left: 20px;
-    z-index: 20; /* Поверх баннера если что */
+    z-index: 20;
 }
-
 .logout-btn-small {
     background-color: #f44336;
     color: white;
@@ -205,7 +202,7 @@ body {
     padding-top: 5px;
 }
 
-/* --- ОБЩИЕ МОДАЛЬНЫЕ ОКНА --- */
+/* МОДАЛЬНЫЕ ОКНА */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -222,7 +219,6 @@ body {
     transition: 0.3s;
 }
 .modal-overlay.open { visibility: visible; opacity: 1; }
-
 .modal-content {
     background: #252525;
     width: 320px;
@@ -233,7 +229,6 @@ body {
     box-shadow: 0 0 30px rgba(0,0,0,0.8);
     position: relative;
 }
-
 .close-btn {
     position: absolute;
     top: 10px;
@@ -246,34 +241,17 @@ body {
 }
 .close-btn:hover { color: white; }
 
-/* СТИЛИ ДЛЯ СПИСКА ПОКУПКИ ДЕНЕГ */
-.exchange-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 15px;
-}
-.exchange-item {
-    background: #1e1e1e;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #333;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    transition: 0.2s;
-}
+/* ОБМЕН */
+.exchange-list { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+.exchange-item { background: #1e1e1e; padding: 10px; border-radius: 8px; border: 1px solid #333; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
 .exchange-item:hover { background: #2a2a2a; border-color: #4caf50; }
 .exchange-reward { font-weight: bold; color: #ffd700; }
 .exchange-cost { font-size: 0.8rem; color: #aaa; }
-
-/* Процесс просмотра */
 .watch-process { display: none; margin-top: 20px; }
 .watch-process.active { display: block; }
 .timer-text { color: #ff9800; font-weight: bold; margin: 10px 0; }
 
-/* МАГАЗИН (Оставляем похожим, но адаптируем) */
+/* МАГАЗИН */
 .shop-modal-content {
     background: #252525;
     width: 90%;
@@ -295,7 +273,7 @@ body {
 .btn-equip { background: #2196F3; }
 .btn-equipped { background: #4caf50; cursor: default; }
 
-/* ПАДАЮЩИЙ ШАРИК */
+/* ШАРИК */
 .bonus-balloon {
     position: absolute;
     width: 60px;
