@@ -5,7 +5,6 @@
     <title>Money Clicker $$$</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="style.css">
-    
     <script src="https://pl28381542.effectivegatecpm.com/a7/c6/45/a7c6454f1cdb67023344f46b3d0d4773.js"></script>
 </head>
 <body>
@@ -55,14 +54,16 @@
     <div id="exchange-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="close-btn" id="close-exchange-x">×</button>
-            <h3 style="color:#4caf50;">Получить деньги</h3>
+            <h3 id="exchange-title" style="color:#4caf50;">Получить деньги</h3>
+            
             <div id="exchange-options" class="exchange-list">
-                <div class="exchange-item" onclick="startAdSequence(1, 0.30)"><span class="exchange-reward">$0.30</span><span class="exchange-cost">1 Реклама</span></div>
-                <div class="exchange-item" onclick="startAdSequence(2, 0.70)"><span class="exchange-reward">$0.70</span><span class="exchange-cost">2 Рекламы</span></div>
-                <div class="exchange-item" onclick="startAdSequence(3, 1.50)"><span class="exchange-reward">$1.50</span><span class="exchange-cost">3 Рекламы 🔥</span></div>
-                <div class="exchange-item" onclick="startAdSequence(4, 3.00)"><span class="exchange-reward">$3.00</span><span class="exchange-cost">4 Рекламы 🔥</span></div>
-                <div class="exchange-item" onclick="startAdSequence(5, 5.00)"><span class="exchange-reward">$5.00</span><span class="exchange-cost">5 Реклам 🔥</span></div>
+                <div class="exchange-item" onclick="startAdSequence('money', 1, 0.30)"><span class="exchange-reward">$0.30</span><span class="exchange-cost">1 Реклама</span></div>
+                <div class="exchange-item" onclick="startAdSequence('money', 2, 0.70)"><span class="exchange-reward">$0.70</span><span class="exchange-cost">2 Рекламы</span></div>
+                <div class="exchange-item" onclick="startAdSequence('money', 3, 1.50)"><span class="exchange-reward">$1.50</span><span class="exchange-cost">3 Рекламы 🔥</span></div>
+                <div class="exchange-item" onclick="startAdSequence('money', 4, 3.00)"><span class="exchange-reward">$3.00</span><span class="exchange-cost">4 Рекламы 🔥</span></div>
+                <div class="exchange-item" onclick="startAdSequence('money', 5, 5.00)"><span class="exchange-reward">$5.00</span><span class="exchange-cost">5 Реклам 🔥</span></div>
             </div>
+
             <div id="exchange-process" class="watch-process">
                 <p style="color:#ccc;">Просмотр рекламы...</p>
                 <h2 id="exchange-step-counter" style="color:white;">1 / 3</h2>
@@ -89,20 +90,20 @@
 
         const AD_LINK = "https://www.effectivegatecpm.com/n7h7t8tnc?key=63d760e9d5c26b2ae739b39ba4062a5f"; 
         const SHOP_ITEMS = [
-            { id: "wool", name: "Шерстяное печенье", price: 1, power: 0.10 },
-            { id: "salt", name: "Солевое печенье", price: 3, power: 0.30 },
-            { id: "coal", name: "Угольное печенье", price: 5, power: 0.50 },
-            { id: "foil", name: "Печенье из фольги", price: 30, power: 1.00 },
-            { id: "alum", name: "Алюминиевое печенье", price: 150, power: 1.50 },
-            { id: "leaf", name: "Листовое печенье", price: 400, power: 2.00 },
-            { id: "copper", name: "Медное печенье", price: 800, power: 3.00 },
-            { id: "lead", name: "Свинцовое печенье", price: 1000, power: 4.50 },
-            { id: "tungsten", name: "Вольфрамовое печенье", price: 1300, power: 6.00 },
-            { id: "silver", name: "Серебряное печенье", price: 1750, power: 8.00 },
-            { id: "gold", name: "Золотое печенье", price: 2000, power: 10.00 },
-            { id: "emerald", name: "Изумрудное печенье", price: 2400, power: 13.00 },
-            { id: "diamond", name: "Алмазное печенье", price: 3500, power: 20.00 },
-            { id: "rainbow", name: "Радужное печенье", price: 5000, power: 30.00 }
+            { id: "wool", name: "Шерстяное", price: 1, power: 0.10 },
+            { id: "salt", name: "Солевое", price: 3, power: 0.30 },
+            { id: "coal", name: "Угольное", price: 5, power: 0.50 },
+            { id: "foil", name: "Фольговое", price: 30, power: 1.00 },
+            { id: "alum", name: "Алюминиевое", price: 150, power: 1.50 },
+            { id: "leaf", name: "Листовое", price: 400, power: 2.00 },
+            { id: "copper", name: "Медное", price: 800, power: 3.00 },
+            { id: "lead", name: "Свинцовое", price: 1000, power: 4.50 }, // Последнее за рекламу (индекс 7)
+            { id: "tungsten", name: "Вольфрамовое", price: 1300, power: 6.00 },
+            { id: "silver", name: "Серебряное", price: 1750, power: 8.00 },
+            { id: "gold", name: "Золотое", price: 2000, power: 10.00 },
+            { id: "emerald", name: "Изумрудное", price: 2400, power: 13.00 },
+            { id: "diamond", name: "Алмазное", price: 3500, power: 20.00 },
+            { id: "rainbow", name: "Радужное", price: 5000, power: 30.00 }
         ];
 
         let currentMoney = 0.00;
@@ -114,8 +115,15 @@
         let isDataLoaded = false;
         let isInitialLoadDone = false;
 
-        window.startAdSequence = startAdSequence;
-        let exTotalAds = 0; let exCurrentAd = 0; let exReward = 0;
+        // Переменные для рекламы
+        window.startAdSequence = startAdSequence; // Экспорт функции
+        let exMode = "money"; // 'money' или 'item'
+        let exTotalAds = 0; 
+        let exCurrentAd = 0; 
+        let exRewardValue = 0; // Для денег
+        let exRewardItemId = ""; // Для предмета
+        
+        // Бонусы
         let adsRequired = 0; let adsWatchedCount = 0; let currentReward = null;
         let balloonTimerInterval = null;
 
@@ -123,7 +131,6 @@
             if (user) {
                 userId = user.uid;
                 document.getElementById('user-info').innerText = "ID: " + user.email;
-                
                 const userRef = ref(db, 'users/' + userId);
                 onValue(userRef, (snapshot) => {
                     const data = snapshot.val();
@@ -135,16 +142,12 @@
                         recalcClickPower();
                         updateDisplay();
                         renderShop();
-                        
                         if (!isInitialLoadDone) {
                             isInitialLoadDone = true; 
                             setTimeout(() => {
                                 isDataLoaded = true;
                                 const loader = document.getElementById('loading-overlay');
-                                if (loader) { 
-                                    loader.classList.add('hidden'); // Добавляем класс для скрытия
-                                    setTimeout(() => loader.remove(), 500); 
-                                }
+                                if (loader) { loader.classList.add('hidden'); setTimeout(() => loader.remove(), 500); }
                             }, 1500);
                         }
                     }
@@ -175,26 +178,39 @@
             document.getElementById('cpc-display').innerText = 'За клик: $' + clickPower.toFixed(2);
         }
 
+        // --- ЛОГИКА РЕКЛАМЫ (ОБМЕН И ПОКУПКА) ---
         const exchangeModal = document.getElementById('exchange-modal');
         const uiContainer = document.getElementById('game-ui');
 
         document.getElementById('add-money-btn').addEventListener('click', () => {
+            document.getElementById('exchange-title').innerText = "Получить деньги";
+            document.getElementById('exchange-options').style.display = 'flex';
+            document.getElementById('exchange-process').classList.remove('active');
             exchangeModal.classList.add('open');
             uiContainer.classList.add('blur-active');
-            resetExchangeUI();
         });
         document.getElementById('close-exchange-x').addEventListener('click', () => {
             exchangeModal.classList.remove('open');
             uiContainer.classList.remove('blur-active');
         });
 
-        function resetExchangeUI() {
-            document.getElementById('exchange-options').style.display = 'flex';
-            document.getElementById('exchange-process').classList.remove('active');
-        }
+        // Функция старта (вызывается и для денег, и для печенья)
+        function startAdSequence(mode, count, valueOrId) {
+            exMode = mode;
+            exTotalAds = count;
+            exCurrentAd = 0;
 
-        function startAdSequence(count, reward) {
-            exTotalAds = count; exReward = reward; exCurrentAd = 0;
+            if (mode === 'money') {
+                exRewardValue = valueOrId;
+            } else if (mode === 'item') {
+                exRewardItemId = valueOrId;
+                const item = SHOP_ITEMS.find(i => i.id === exRewardItemId);
+                document.getElementById('exchange-title').innerText = `Получить: ${item.name}`;
+                // Для предметов сразу скрываем опции, так как мы пришли из магазина
+                exchangeModal.classList.add('open');
+                uiContainer.classList.add('blur-active');
+            }
+
             document.getElementById('exchange-options').style.display = 'none';
             document.getElementById('exchange-process').classList.add('active');
             updateExchangeStep();
@@ -213,7 +229,8 @@
             btn.innerText = "Проверка..."; btn.disabled = true;
             setTimeout(() => {
                 exCurrentAd++;
-                if (exTotalAds >= 3 && exCurrentAd < exTotalAds) startCooldownTimer();
+                // Кулдаун есть только если нужно смотреть больше 1 рекламы
+                if (exTotalAds > 1 && exCurrentAd < exTotalAds) startCooldownTimer();
                 else updateExchangeStep();
             }, 3000);
         });
@@ -232,12 +249,20 @@
         }
 
         function giveExchangeReward() {
-            currentMoney += exReward;
-            update(ref(db, 'users/' + userId), { money: parseFloat(currentMoney.toFixed(2)) });
-            alert(`Вы получили $${exReward.toFixed(2)}!`);
+            if (exMode === 'money') {
+                currentMoney += exRewardValue;
+                update(ref(db, 'users/' + userId), { money: parseFloat(currentMoney.toFixed(2)) });
+                alert(`Вы получили $${exRewardValue.toFixed(2)}!`);
+            } else if (exMode === 'item') {
+                let newUpgrades = [...ownedUpgrades, exRewardItemId];
+                update(ref(db, 'users/' + userId), { upgrades: newUpgrades });
+                alert("Печенье получено!");
+                // Обновляем магазин (хотя он сам обновится через listener)
+            }
             exchangeModal.classList.remove('open'); uiContainer.classList.remove('blur-active');
         }
 
+        // --- МАГАЗИН ---
         const shopModal = document.getElementById('shop-modal');
         document.getElementById('open-shop-btn').addEventListener('click', () => {
             shopModal.classList.add('open'); uiContainer.classList.add('blur-active');
@@ -248,18 +273,56 @@
 
         function renderShop() {
             const list = document.getElementById('shop-list'); list.innerHTML = ""; 
-            SHOP_ITEMS.forEach(item => {
+            
+            // Индекс Свинцового печенья (lead) = 7
+            const leadIndex = 7; 
+
+            SHOP_ITEMS.forEach((item, index) => {
                 const isOwned = ownedUpgrades.includes(item.id);
                 const isEquipped = (equippedItem === item.id);
+                
+                // Проверка доступности рекламы для покупки
+                let canBuyWithAds = false;
+                if (!isOwned && index <= leadIndex) {
+                    // Можно купить за рекламу, если это первая печенька (index 0) 
+                    // ИЛИ если предыдущая куплена.
+                    if (index === 0) canBuyWithAds = true;
+                    else {
+                        const prevItem = SHOP_ITEMS[index - 1];
+                        if (ownedUpgrades.includes(prevItem.id)) canBuyWithAds = true;
+                    }
+                }
+
                 const el = document.createElement('div');
                 el.className = "shop-item " + (isEquipped ? "equipped" : "");
-                let btnHtml = isEquipped ? `<button class="action-btn btn-equipped">Надето</button>` :
-                              isOwned ? `<button class="action-btn btn-equip" id="eq-${item.id}">Надеть</button>` :
-                              `<button class="action-btn btn-buy" id="buy-${item.id}">$${item.price}</button>`;
-                el.innerHTML = `<div><h4>${item.name}</h4><p>+$${item.power}</p></div>${btnHtml}`;
+                
+                let btnsHtml = "";
+                
+                if (isEquipped) {
+                    btnsHtml = `<button class="action-btn btn-equipped">Надето</button>`;
+                } else if (isOwned) {
+                    btnsHtml = `<button class="action-btn btn-equip" id="eq-${item.id}">Надеть</button>`;
+                } else {
+                    // Кнопки покупки
+                    if (canBuyWithAds) {
+                        btnsHtml += `<button class="action-btn btn-ad-buy" id="ad-buy-${item.id}">🎁 (3)</button> `;
+                    }
+                    btnsHtml += `<button class="action-btn btn-buy" id="buy-${item.id}">$${item.price}</button>`;
+                }
+
+                el.innerHTML = `
+                    <div class="item-left"><h4>${item.name}</h4><p>+$${item.power}</p></div>
+                    <div class="item-right">${btnsHtml}</div>
+                `;
                 list.appendChild(el);
+
                 if(!isEquipped && isOwned) document.getElementById(`eq-${item.id}`).onclick = () => equipItem(item.id);
-                if(!isOwned) document.getElementById(`buy-${item.id}`).onclick = () => buyItem(item);
+                if(!isOwned) {
+                    document.getElementById(`buy-${item.id}`).onclick = () => buyItem(item);
+                    if (canBuyWithAds) {
+                        document.getElementById(`ad-buy-${item.id}`).onclick = () => startAdSequence('item', 3, item.id);
+                    }
+                }
             });
             const unequip = document.createElement('div'); unequip.style.textAlign='center'; unequip.style.marginTop='10px';
             unequip.innerHTML = `<button style="background:#f44336; color:white; border:none; padding:5px 10px; border-radius:5px;">Снять всё</button>`;
@@ -280,30 +343,19 @@
             update(ref(db, 'users/' + userId), { equipped: id });
         }
 
-        // --- ТАЙМЕР ИСПРАВЛЕН ---
+        // --- БОНУСЫ ---
         function startBalloonSpawner() {
             if (balloonTimerInterval) clearInterval(balloonTimerInterval);
-            
-            // Время от 60 до 180 секунд
             const waitTime = Math.floor(Math.random() * (180000 - 60000) + 60000);
             const targetTime = Date.now() + waitTime;
-            
-            console.log("%c🎁 Таймер запущен!", "color: yellow; font-weight: bold;");
-
+            console.log("🎁 Таймер запущен");
             balloonTimerInterval = setInterval(() => {
                 const now = Date.now();
-                const diff = targetTime - now;
-                const secondsLeft = Math.ceil(diff / 1000);
-
-                if (diff <= 0) {
+                if (now >= targetTime) {
                     clearInterval(balloonTimerInterval);
-                    console.log("%c🎁 ВРЕМЯ! Выпускаем шарик!", "color: lime; font-weight: bold; font-size: 14px;");
                     spawnBalloon();
-                    // Рекурсивный запуск следующего таймера
                     startBalloonSpawner();
-                } else {
-                    console.log(`⏳ До подарка: ${secondsLeft} сек`);
-                }
+                } else console.log("⏳");
             }, 1000);
         }
 
@@ -360,7 +412,14 @@
             setTimeout(()=>{
                 adsWatchedCount++; btn.disabled=false;
                 if(adsWatchedCount>=adsRequired) {
-                    giveBonusReward();
+                    if(currentReward.type==="money") {
+                        currentMoney+=currentReward.value;
+                        update(ref(db,'users/'+userId),{money:parseFloat(currentMoney.toFixed(2))});
+                    } else {
+                        let nu = [...ownedUpgrades, currentReward.id];
+                        update(ref(db,'users/'+userId),{upgrades:nu});
+                    }
+                    alert("Бонус получен!");
                     document.getElementById('ad-modal').classList.remove('open');
                     uiContainer.classList.remove('blur-active');
                 } else updateAdModalUI();
@@ -370,17 +429,6 @@
         document.getElementById('close-modal-btn').onclick = () => {
             document.getElementById('ad-modal').classList.remove('open');
             uiContainer.classList.remove('blur-active');
-        }
-
-        function giveBonusReward() {
-            if(currentReward.type==="money") {
-                currentMoney+=currentReward.value;
-                update(ref(db,'users/'+userId),{money:parseFloat(currentMoney.toFixed(2))});
-            } else {
-                let nu = [...ownedUpgrades, currentReward.id];
-                update(ref(db,'users/'+userId),{upgrades:nu});
-            }
-            alert("Бонус получен!");
         }
 
         document.getElementById('logoutBtn').addEventListener('click', () => {
