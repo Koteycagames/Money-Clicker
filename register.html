@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация - Money Clicker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Регистрация</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Пароль">
+        <button id="registerBtn">Создать аккаунт</button>
+        <button class="secondary-btn" onclick="location.href='login.html'">У меня есть аккаунт</button>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { ref, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+        document.getElementById('registerBtn').addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+                const user = userCredential.user;
+
+                // Создаем структуру пользователя в БД
+                await set(ref(db, 'users/' + user.uid), {
+                    money: 0.00,
+                    upgrades: ["start"], // Пустой массив может исчезнуть в Firebase, добавим старт
+                    quests: ["start"],
+                    banned: false
+                });
+
+                alert("Успешно! Перенаправляем...");
+                window.location.href = "clicker.html";
+            } catch (error) {
+                alert("Ошибка: " + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
