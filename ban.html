@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>BANNED</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://pl28381542.effectivegatecpm.com/a7/c6/45/a7c6454f1cdb67023344f46b3d0d4773.js"></script>
+</head>
+<body style="background-color: #2b0000;">
+    <div class="container" style="border: 2px solid red;">
+        <h1 style="color: red;">АККАУНТ ЗАБЛОКИРОВАН</h1>
+        <p>Вы нарушили правила игры.</p>
+        
+        <div id="ban-reason" style="margin: 20px 0; font-weight: bold; color: #ff8888;">
+            Причина: Загрузка...
+        </div>
+
+        <div class="ad-container">
+            <script async="async" data-cfasync="false" src="https://pl28384763.effectivegatecpm.com/4f46afbe5794b0570feb06a1295424d5/invoke.js"></script>
+            <div id="container-4f46afbe5794b0570feb06a1295424d5"></div>
+        </div>
+
+        <button id="logoutBtn" class="logout-btn">Выйти</button>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { ref, get } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Получаем причину бана
+                const snapshot = await get(ref(db, 'users/' + user.uid + '/banned'));
+                const reason = snapshot.val();
+                
+                // Если banned === true (без текста) или строка
+                if (reason === true) {
+                    document.getElementById('ban-reason').innerText = "Причина: Нарушение правил";
+                } else if (reason) {
+                    document.getElementById('ban-reason').innerText = "Причина: " + reason;
+                } else {
+                    // Если вдруг разбанили, кидаем обратно
+                    window.location.href = "clicker.html";
+                }
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            signOut(auth).then(() => window.location.href = "login.html");
+        });
+    </script>
+</body>
+</html>
