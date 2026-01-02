@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Money Clicker $$$</title>
     <link rel="stylesheet" href="style.css">
+    
     <script src="https://pl28381542.effectivegatecpm.com/a7/c6/45/a7c6454f1cdb67023344f46b3d0d4773.js"></script>
 </head>
 <body>
@@ -12,8 +13,14 @@
         <div class="modal-content">
             <h3>🎁 Бонус найден!</h3>
             <p>Награда: <span id="reward-text" class="reward-highlight">???</span></p>
-            <p style="font-size: 0.8rem; color: #aaa;">Посмотрите рекламу, чтобы забрать награду.</p>
-            <button id="watch-ad-btn" style="background-color: #4caf50;">Смотреть (+Награда)</button>
+            
+            <p style="margin: 10px 0; font-weight: bold; color: #fff;">
+                Нужно посмотреть реклам: <span id="ads-counter" style="color: #4caf50;">0/0</span>
+            </p>
+
+            <p style="font-size: 0.8rem; color: #aaa;">Нажмите кнопку и дождитесь проверки.</p>
+            
+            <button id="watch-ad-btn" style="background-color: #4caf50;">Смотреть рекламу</button>
             <button id="close-modal-btn" class="secondary-btn" style="background-color: #f44336;">Отказаться</button>
         </div>
     </div>
@@ -49,14 +56,12 @@
     <script type="module">
         import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-        import { ref, onValue, set, get, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+        import { ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
         // --- КОНФИГУРАЦИЯ ---
-        // Сюда можешь вставить Direct Link от Adsterra, если есть. 
-        // Пока оставил заглушку #.
+        // ТВОЯ ССЫЛКА ВСТАВЛЕНА СЮДА:
         const AD_LINK = "https://www.effectivegatecpm.com/n7h7t8tnc?key=63d760e9d5c26b2ae739b39ba4062a5f"; 
 
-        // СПИСОК ТОВАРОВ (ID, Имя, Цена, Сила клика)
         const SHOP_ITEMS = [
             { id: "wool", name: "Шерстяное печенье", price: 1, power: 0.10 },
             { id: "salt", name: "Солевое печенье", price: 3, power: 0.30 },
@@ -75,12 +80,17 @@
         ];
 
         let currentMoney = 0.00;
-        let clickPower = 0.01; // Начальная сила
+        let clickPower = 0.01; 
         let userId = null;
         let isCooldown = false;
-        let ownedUpgrades = []; // Список купленных ID
+        let ownedUpgrades = []; 
 
-        // --- FIREBASE LOGIC ---
+        // Переменные для мульти-рекламы
+        let adsRequired = 0;
+        let adsWatchedCount = 0;
+        let currentReward = null;
+
+        // --- FIREBASE ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 userId = user.uid;
@@ -98,24 +108,20 @@
                         currentMoney = parseFloat(data.money) || 0;
                         ownedUpgrades = data.upgrades || ["start"];
                         
-                        // Пересчитываем силу клика (берем самую мощную печеньку из купленных)
                         recalcClickPower();
-                        
                         updateDisplay();
                         renderShop();
                     }
                 });
                 
-                // Запускаем спавн шариков
                 startBalloonSpawner();
             } else {
                 window.location.href = "index.html";
             }
         });
 
-        // Функция пересчета силы клика
         function recalcClickPower() {
-            let maxPower = 0.01; // База
+            let maxPower = 0.01; 
             SHOP_ITEMS.forEach(item => {
                 if (ownedUpgrades.includes(item.id)) {
                     if (item.power > maxPower) maxPower = item.power;
@@ -124,9 +130,8 @@
             clickPower = maxPower;
         }
 
-        // --- ИГРОВАЯ ЛОГИКА ---
+        // --- КЛИКИ ---
         const clickBtn = document.getElementById('click-btn');
-
         clickBtn.addEventListener('click', () => {
             if (!userId || isCooldown) return;
             isCooldown = true;
@@ -150,7 +155,7 @@
         // --- МАГАЗИН ---
         function renderShop() {
             const list = document.getElementById('shop-list');
-            list.innerHTML = ""; // Очистить
+            list.innerHTML = ""; 
 
             SHOP_ITEMS.forEach(item => {
                 const isOwned = ownedUpgrades.includes(item.id);
@@ -167,7 +172,6 @@
                     </button>
                 `;
                 
-                // Логика кнопки покупки
                 const btn = el.querySelector('.buy-btn');
                 if (!isOwned) {
                     btn.addEventListener('click', () => buyItem(item));
@@ -179,17 +183,11 @@
 
         function buyItem(item) {
             if (currentMoney >= item.price) {
-                // Списываем деньги
                 currentMoney -= item.price;
-                
-                // Добавляем в массив
                 let newUpgrades = [...ownedUpgrades, item.id];
-                
-                // Сохраняем в БД (деньги и апгрейды)
                 const updates = {};
                 updates['/users/' + userId + '/money'] = parseFloat(currentMoney.toFixed(2));
                 updates['/users/' + userId + '/upgrades'] = newUpgrades;
-                
                 update(ref(db), updates);
                 alert(`Вы купили ${item.name}!`);
             } else {
@@ -197,44 +195,38 @@
             }
         }
 
-        // --- СИСТЕМА ШАРИКОВ (РЕКЛАМА) ---
-        let currentReward = null;
-
+        // --- ШАРИКИ И РЕКЛАМА ---
         function startBalloonSpawner() {
-            // Спавн каждые 15-40 секунд (случайно)
-            const randomTime = Math.random() * (40000 - 15000) + 15000;
+            // Спавн шариков (раз в 1 - 3 минуты)
+            const randomTime = Math.random() * (180000 - 60000) + 60000;
+            console.log("След. подарок через: " + Math.round(randomTime/1000) + " сек.");
+            
             setTimeout(() => {
                 spawnBalloon();
-                startBalloonSpawner(); // Рекурсия для бесконечности
+                startBalloonSpawner(); 
             }, randomTime);
         }
 
         function spawnBalloon() {
             const balloon = document.createElement('div');
             balloon.className = "bonus-balloon";
-            
-            // Рандомная позиция X (чтобы не улетал за края, берем 10% - 80%)
             const randomLeft = Math.random() * 70 + 10;
             balloon.style.left = randomLeft + "%";
             
-            // Анимация падения через JS (проще контролировать удаление)
             let topPos = -100;
-            const speed = 2 + Math.random() * 2; // Случайная скорость
+            const speed = 2 + Math.random() * 2; 
             
             document.body.appendChild(balloon);
             
             const animInterval = setInterval(() => {
                 topPos += speed;
                 balloon.style.top = topPos + "px";
-                
-                // Если улетел вниз
                 if (topPos > window.innerHeight) {
                     clearInterval(animInterval);
                     balloon.remove();
                 }
             }, 20);
 
-            // Клик по шарику
             balloon.addEventListener('click', () => {
                 clearInterval(animInterval);
                 balloon.remove();
@@ -244,91 +236,93 @@
 
         function generateOffer() {
             const rand = Math.random() * 100;
-            let rewardType = "";
-            let rewardValue = 0;
-            let isItem = false;
-            let itemId = "";
+            let rewardType = "", rewardValue = 0, itemId = "";
 
-            // Шансы (Loot Table)
-            if (rand < 40) { // 0-40%
-                rewardType = "money"; rewardValue = 0.30;
-            } else if (rand < 70) { // 40-70%
-                rewardType = "money"; rewardValue = 0.50;
-            } else if (rand < 85) { // 70-85%
-                rewardType = "money"; rewardValue = 1.00;
-            } else if (rand < 92) { // 85-92% (Солевое печенье)
-                rewardType = "item"; itemId = "salt";
-            } else if (rand < 96) { // 92-96%
-                rewardType = "money"; rewardValue = 1.50;
-            } else if (rand < 98) { // 96-98% (Шерстяное печенье)
-                rewardType = "item"; itemId = "wool";
-            } else { // 98-100% (Угольное печенье)
-                rewardType = "item"; itemId = "coal";
-            }
+            if (rand < 40) { rewardType = "money"; rewardValue = 0.30; }
+            else if (rand < 70) { rewardType = "money"; rewardValue = 0.50; }
+            else if (rand < 85) { rewardType = "money"; rewardValue = 1.00; }
+            else if (rand < 92) { rewardType = "item"; itemId = "salt"; }
+            else if (rand < 96) { rewardType = "money"; rewardValue = 1.50; }
+            else if (rand < 98) { rewardType = "item"; itemId = "wool"; }
+            else { rewardType = "item"; itemId = "coal"; }
 
-            // Формируем объект награды для использования после рекламы
             if (rewardType === "money") {
                 currentReward = { type: "money", value: rewardValue, text: `$${rewardValue.toFixed(2)}` };
             } else {
-                // Ищем имя предмета
                 const itemObj = SHOP_ITEMS.find(i => i.id === itemId);
                 currentReward = { type: "item", id: itemId, text: itemObj.name };
-                
-                // Если предмет уже есть, даем компенсацию деньгами
                 if (ownedUpgrades.includes(itemId)) {
                     currentReward = { type: "money", value: itemObj.price, text: `$${itemObj.price} (Компенсация)` };
                 }
             }
 
-            // Открываем модальное окно
-            document.getElementById('reward-text').innerText = currentReward.text;
+            // --- НОВАЯ ЛОГИКА КОЛИЧЕСТВА РЕКЛАМ ---
+            if (rewardType === "money" && rewardValue <= 1.00) {
+                // Если награда деньги и меньше или равно 1.00 - ОДНА реклама
+                adsRequired = 1;
+            } else {
+                // Если 1.50 денег или Печенька (item) - ДВЕ рекламы
+                adsRequired = 2;
+            }
+            
+            adsWatchedCount = 0;
+            updateAdModalUI();
             document.getElementById('ad-modal').classList.add('active');
         }
 
-        // Кнопки модального окна
+        function updateAdModalUI() {
+            document.getElementById('reward-text').innerText = currentReward.text;
+            document.getElementById('ads-counter').innerText = `${adsWatchedCount}/${adsRequired}`;
+            
+            const btn = document.getElementById('watch-ad-btn');
+            if (adsWatchedCount > 0 && adsWatchedCount < adsRequired) {
+                btn.innerText = "Смотреть следующую";
+            } else {
+                btn.innerText = "Смотреть рекламу";
+            }
+        }
+
         document.getElementById('close-modal-btn').addEventListener('click', () => {
             document.getElementById('ad-modal').classList.remove('active');
         });
 
         document.getElementById('watch-ad-btn').addEventListener('click', () => {
-            // 1. Открываем рекламу (в новой вкладке)
+            // Открываем рекламу
             window.open(AD_LINK, '_blank');
             
-            // 2. Имитируем ожидание (пока пользователь "смотрит")
             const btn = document.getElementById('watch-ad-btn');
             const originalText = btn.innerText;
             btn.innerText = "Проверка...";
             btn.disabled = true;
 
+            // Ждем 3 секунды
             setTimeout(() => {
-                // 3. Выдаем награду
-                giveReward();
-                
-                // Сброс интерфейса
-                document.getElementById('ad-modal').classList.remove('active');
-                btn.innerText = originalText;
+                adsWatchedCount++;
                 btn.disabled = false;
-            }, 3000); // 3 секунды задержки
+                
+                // Если посмотрели достаточно
+                if (adsWatchedCount >= adsRequired) {
+                    giveReward();
+                    document.getElementById('ad-modal').classList.remove('active');
+                } else {
+                    // Если нужно еще
+                    updateAdModalUI();
+                }
+            }, 3000); 
         });
 
         function giveReward() {
             if (!userId || !currentReward) return;
-
             const updates = {};
-            let msg = "";
-
             if (currentReward.type === "money") {
                 currentMoney += currentReward.value;
                 updates['/users/' + userId + '/money'] = parseFloat(currentMoney.toFixed(2));
-                msg = `Вы получили ${currentReward.text}!`;
             } else if (currentReward.type === "item") {
                 let newUpgrades = [...ownedUpgrades, currentReward.id];
                 updates['/users/' + userId + '/upgrades'] = newUpgrades;
-                msg = `Вы получили ${currentReward.text}!`;
             }
-
             update(ref(db), updates);
-            // alert(msg); // Можно включить алерт, если нужно
+            alert("Награда получена!");
         }
 
         document.getElementById('logoutBtn').addEventListener('click', () => {
