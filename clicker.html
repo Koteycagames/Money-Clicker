@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Money Clicker $$$</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://pl28381542.effectivegatecpm.com/a7/c6/45/a7c6454f1cdb67023344f46b3d0d4773.js"></script>
+</head>
+<body>
+
+    <div class="container" style="width: 400px;">
+        <div id="user-info" style="font-size: 0.8rem; color: #888;">Загрузка...</div>
+        
+        <div id="money-display">$0.00</div>
+        
+        <button id="click-btn">КЛИК</button>
+        
+        <div class="tabs">
+            <h3>Магазин</h3>
+            <p>В разработке...</p>
+        </div>
+
+        <div class="tabs">
+            <h3>Задания</h3>
+            <p>В разработке...</p>
+        </div>
+        
+        <div class="ad-container">
+            <script async="async" data-cfasync="false" src="https://pl28384763.effectivegatecpm.com/4f46afbe5794b0570feb06a1295424d5/invoke.js"></script>
+            <div id="container-4f46afbe5794b0570feb06a1295424d5"></div>
+        </div>
+
+        <button id="logoutBtn" class="logout-btn">Выйти</button>
+    </div>
+
+    <script type="module">
+        import { auth, db } from './firebase-config.js';
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { ref, onValue, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+        let currentMoney = 0.00;
+        let userId = null;
+
+        // Проверка авторизации
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                userId = user.uid;
+                document.getElementById('user-info').innerText = "ID: " + user.email;
+                
+                // Слушаем изменения данных игрока
+                const userRef = ref(db, 'users/' + userId);
+                onValue(userRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if (data) {
+                        // Проверка на БАН
+                        if (data.banned && data.banned !== false) {
+                            window.location.href = "ban.html";
+                            return;
+                        }
+
+                        currentMoney = parseFloat(data.money) || 0;
+                        updateDisplay();
+                    }
+                });
+
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        // Логика клика
+        document.getElementById('click-btn').addEventListener('click', () => {
+            if (!userId) return;
+
+            // Добавляем 1 цент
+            currentMoney += 0.01;
+            
+            // Сразу обновляем экран (для плавности)
+            updateDisplay();
+
+            // Сохраняем в Firebase
+            // .toFixed(2) возвращает строку, поэтому оборачиваем в parseFloat для сохранения числа
+            set(ref(db, 'users/' + userId + '/money'), parseFloat(currentMoney.toFixed(2)));
+        });
+
+        function updateDisplay() {
+            document.getElementById('money-display').innerText = '$' + currentMoney.toFixed(2);
+        }
+
+        // Выход
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.href = "login.html";
+            });
+        });
+    </script>
+</body>
+</html>
