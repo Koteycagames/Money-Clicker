@@ -16,7 +16,6 @@
     </div>
 
     <div id="game-ui">
-        
         <div class="top-bar">
             <div id="money-display">$0.00</div>
             <button id="add-money-btn" class="plus-btn">+</button>
@@ -24,12 +23,8 @@
         <div id="cpc-display">Клик: $0.01</div>
 
         <div class="left-sidebar">
-            <button id="open-shop-btn" class="menu-btn">
-                <span>🛒</span> Магазин
-            </button>
-            <button id="quests-btn" class="menu-btn" onclick="alert('Квесты в разработке!')">
-                <span>📜</span> Квесты
-            </button>
+            <button id="open-shop-btn" class="menu-btn"><span>🛒</span> Магазин</button>
+            <button id="quests-btn" class="menu-btn" onclick="alert('Квесты в разработке!')"><span>📜</span> Квесты</button>
         </div>
 
         <div class="center-stage">
@@ -43,13 +38,7 @@
 
         <div class="bottom-banner-container">
             <script>
-              atOptions = {
-                'key' : 'ba5b233760526a810caa77cf17293467',
-                'format' : 'iframe',
-                'height' : 90,
-                'width' : 728,
-                'params' : {}
-              };
+              atOptions = { 'key' : 'ba5b233760526a810caa77cf17293467', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
             </script>
             <script src="https://www.highperformanceformat.com/ba5b233760526a810caa77cf17293467/invoke.js"></script>
         </div>
@@ -61,9 +50,7 @@
                 <h2 style="margin:0; color:#ff9800;">Магазин</h2>
                 <button class="close-btn" id="close-shop-x">×</button>
             </div>
-            <div id="shop-list" class="shop-list-scroll">
-                <p>Загрузка...</p>
-            </div>
+            <div id="shop-list" class="shop-list-scroll"><p>Загрузка...</p></div>
         </div>
     </div>
 
@@ -71,39 +58,17 @@
         <div class="modal-content">
             <button class="close-btn" id="close-exchange-x">×</button>
             <h3 style="color:#4caf50;">Получить деньги</h3>
-            
             <div id="exchange-options" class="exchange-list">
-                <div class="exchange-item" onclick="startAdSequence(1, 0.30)">
-                    <span class="exchange-reward">$0.30</span>
-                    <span class="exchange-cost">1 Реклама</span>
-                </div>
-                <div class="exchange-item" onclick="startAdSequence(2, 0.70)">
-                    <span class="exchange-reward">$0.70</span>
-                    <span class="exchange-cost">2 Рекламы</span>
-                </div>
-                <div class="exchange-item" onclick="startAdSequence(3, 1.50)">
-                    <span class="exchange-reward">$1.50</span>
-                    <span class="exchange-cost">3 Рекламы 🔥</span>
-                </div>
-                <div class="exchange-item" onclick="startAdSequence(4, 3.00)">
-                    <span class="exchange-reward">$3.00</span>
-                    <span class="exchange-cost">4 Рекламы 🔥</span>
-                </div>
-                <div class="exchange-item" onclick="startAdSequence(5, 5.00)">
-                    <span class="exchange-reward">$5.00</span>
-                    <span class="exchange-cost">5 Реклам 🔥</span>
-                </div>
+                <div class="exchange-item" onclick="startAdSequence(1, 0.30)"><span class="exchange-reward">$0.30</span><span class="exchange-cost">1 Реклама</span></div>
+                <div class="exchange-item" onclick="startAdSequence(2, 0.70)"><span class="exchange-reward">$0.70</span><span class="exchange-cost">2 Рекламы</span></div>
+                <div class="exchange-item" onclick="startAdSequence(3, 1.50)"><span class="exchange-reward">$1.50</span><span class="exchange-cost">3 Рекламы 🔥</span></div>
+                <div class="exchange-item" onclick="startAdSequence(4, 3.00)"><span class="exchange-reward">$3.00</span><span class="exchange-cost">4 Рекламы 🔥</span></div>
+                <div class="exchange-item" onclick="startAdSequence(5, 5.00)"><span class="exchange-reward">$5.00</span><span class="exchange-cost">5 Реклам 🔥</span></div>
             </div>
-
             <div id="exchange-process" class="watch-process">
                 <p style="color:#ccc;">Просмотр рекламы...</p>
                 <h2 id="exchange-step-counter" style="color:white;">1 / 3</h2>
-                
-                <div id="cooldown-msg" style="display:none;">
-                    <p class="timer-text">Ждем 15 сек...</p>
-                    <p style="font-size:0.7rem; color:#888;">Защита от спама</p>
-                </div>
-
+                <div id="cooldown-msg" style="display:none;"><p class="timer-text">Ждем 15 сек...</p></div>
                 <button id="exchange-watch-btn" style="background:#4caf50; width:100%; padding:10px; margin-top:10px; border:none; border-radius:5px; color:white; font-weight:bold;">Смотреть</button>
             </div>
         </div>
@@ -113,23 +78,18 @@
         <div class="modal-content">
             <h3>🎁 Бонус!</h3>
             <p>Награда: <span id="reward-text" style="color:#ffd700; font-weight:bold;">???</span></p>
-            <p style="margin: 10px 0; color: #fff;">
-                Реклам: <span id="ads-counter" style="color: #4caf50;">0/0</span>
-            </p>
+            <p style="margin: 10px 0; color: #fff;">Реклам: <span id="ads-counter" style="color: #4caf50;">0/0</span></p>
             <button id="watch-ad-btn" style="background:#4caf50; width:100%; padding:10px; border:none; border-radius:5px; color:white;">Смотреть</button>
             <button id="close-modal-btn" style="background:#f44336; width:100%; padding:8px; margin-top:5px; border:none; border-radius:5px; color:white;">Отмена</button>
         </div>
     </div>
-
 
     <script type="module">
         import { auth, db } from './firebase-config.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
         import { ref, onValue, set, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-        // --- КОНФИГУРАЦИЯ ---
         const AD_LINK = "https://www.effectivegatecpm.com/n7h7t8tnc?key=63d760e9d5c26b2ae739b39ba4062a5f"; 
-
         const SHOP_ITEMS = [
             { id: "wool", name: "Шерстяное печенье", price: 1, power: 0.10 },
             { id: "salt", name: "Солевое печенье", price: 3, power: 0.30 },
@@ -151,26 +111,16 @@
         let clickPower = 0.01; 
         let userId = null;
         let isCooldown = false;
-        
         let ownedUpgrades = []; 
         let equippedItem = "none";
-
         let isDataLoaded = false;
         let isInitialLoadDone = false;
 
-        // Глобальные переменные для рекламы
-        window.startAdSequence = startAdSequence; // Чтобы HTML видел функцию
-        let exTotalAds = 0;
-        let exCurrentAd = 0;
-        let exReward = 0;
-
-        // Переменные для бонусов
-        let adsRequired = 0;
-        let adsWatchedCount = 0;
-        let currentReward = null;
+        window.startAdSequence = startAdSequence;
+        let exTotalAds = 0; let exCurrentAd = 0; let exReward = 0;
+        let adsRequired = 0; let adsWatchedCount = 0; let currentReward = null;
         let balloonTimerInterval = null;
 
-        // --- FIREBASE ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 userId = user.uid;
@@ -181,15 +131,12 @@
                     const data = snapshot.val();
                     if (data) {
                         if (data.banned) { window.location.href = "ban.html"; return; }
-                        
                         currentMoney = parseFloat(data.money) || 0;
                         ownedUpgrades = data.upgrades || ["start"];
                         equippedItem = data.equipped || "none";
-                        
                         recalcClickPower();
                         updateDisplay();
                         renderShop();
-
                         if (!isInitialLoadDone) {
                             isInitialLoadDone = true; 
                             setTimeout(() => {
@@ -201,9 +148,7 @@
                     }
                 });
                 startBalloonSpawner();
-            } else {
-                window.location.href = "index.html";
-            }
+            } else { window.location.href = "index.html"; }
         });
 
         function recalcClickPower() {
@@ -217,11 +162,6 @@
             if (!userId || isCooldown || !isDataLoaded) return;
             isCooldown = true;
             clickBtn.classList.add('cooldown');
-            
-            // В CSS добавлен хак, чтобы кнопка всегда центрировалась при Active
-            // Но класс cooldown может сбивать transform. 
-            // Тут анимация делается через background-size, так что ок.
-
             currentMoney += clickPower;
             updateDisplay();
             set(ref(db, 'users/' + userId + '/money'), parseFloat(currentMoney.toFixed(2)));
@@ -233,7 +173,6 @@
             document.getElementById('cpc-display').innerText = 'За клик: $' + clickPower.toFixed(2);
         }
 
-        // --- ЛОГИКА "ПОЛУЧИТЬ ДЕНЬГИ" (ПЛЮСИК) ---
         const exchangeModal = document.getElementById('exchange-modal');
         const uiContainer = document.getElementById('game-ui');
 
@@ -242,7 +181,6 @@
             uiContainer.classList.add('blur-active');
             resetExchangeUI();
         });
-
         document.getElementById('close-exchange-x').addEventListener('click', () => {
             exchangeModal.classList.remove('open');
             uiContainer.classList.remove('blur-active');
@@ -254,10 +192,7 @@
         }
 
         function startAdSequence(count, reward) {
-            exTotalAds = count;
-            exReward = reward;
-            exCurrentAd = 0;
-            
+            exTotalAds = count; exReward = reward; exCurrentAd = 0;
             document.getElementById('exchange-options').style.display = 'none';
             document.getElementById('exchange-process').classList.add('active');
             updateExchangeStep();
@@ -266,59 +201,31 @@
         function updateExchangeStep() {
             document.getElementById('exchange-step-counter').innerText = `${exCurrentAd} / ${exTotalAds}`;
             const btn = document.getElementById('exchange-watch-btn');
-            
-            if (exCurrentAd >= exTotalAds) {
-                // Все просмотрено
-                giveExchangeReward();
-            } else {
-                // Готовы смотреть следующую
-                btn.disabled = false;
-                btn.innerText = "Смотреть рекламу";
-                btn.style.background = "#4caf50";
-            }
+            if (exCurrentAd >= exTotalAds) giveExchangeReward();
+            else { btn.disabled = false; btn.innerText = "Смотреть рекламу"; btn.style.display = 'block'; }
         }
 
         document.getElementById('exchange-watch-btn').addEventListener('click', () => {
             const btn = document.getElementById('exchange-watch-btn');
-            
-            // Открываем рекламу
             window.open(AD_LINK, '_blank');
-            btn.innerText = "Проверка...";
-            btn.disabled = true;
-
-            // Ждем 3 секунды (типа смотрим)
+            btn.innerText = "Проверка..."; btn.disabled = true;
             setTimeout(() => {
                 exCurrentAd++;
-                
-                // Проверяем, нужен ли кулдаун (если пак >= 3 и мы еще не закончили)
-                if (exTotalAds >= 3 && exCurrentAd < exTotalAds) {
-                    startCooldownTimer();
-                } else {
-                    updateExchangeStep();
-                }
-
+                if (exTotalAds >= 3 && exCurrentAd < exTotalAds) startCooldownTimer();
+                else updateExchangeStep();
             }, 3000);
         });
 
         function startCooldownTimer() {
             const msg = document.getElementById('cooldown-msg');
             const btn = document.getElementById('exchange-watch-btn');
-            const counter = document.getElementById('exchange-step-counter');
-            
-            counter.innerText = `${exCurrentAd} / ${exTotalAds}`;
-            msg.style.display = 'block';
-            btn.style.display = 'none';
-
+            document.getElementById('exchange-step-counter').innerText = `${exCurrentAd} / ${exTotalAds}`;
+            msg.style.display = 'block'; btn.style.display = 'none';
             let seconds = 15;
             const timer = setInterval(() => {
                 seconds--;
                 msg.querySelector('.timer-text').innerText = `Ждем ${seconds} сек...`;
-                if (seconds <= 0) {
-                    clearInterval(timer);
-                    msg.style.display = 'none';
-                    btn.style.display = 'block';
-                    updateExchangeStep(); // Включаем кнопку
-                }
+                if (seconds <= 0) { clearInterval(timer); msg.style.display = 'none'; updateExchangeStep(); }
             }, 1000);
         }
 
@@ -326,27 +233,19 @@
             currentMoney += exReward;
             update(ref(db, 'users/' + userId), { money: parseFloat(currentMoney.toFixed(2)) });
             alert(`Вы получили $${exReward.toFixed(2)}!`);
-            
-            // Закрываем
-            exchangeModal.classList.remove('open');
-            uiContainer.classList.remove('blur-active');
+            exchangeModal.classList.remove('open'); uiContainer.classList.remove('blur-active');
         }
 
-
-        // --- МАГАЗИН ---
         const shopModal = document.getElementById('shop-modal');
         document.getElementById('open-shop-btn').addEventListener('click', () => {
-            shopModal.classList.add('open');
-            uiContainer.classList.add('blur-active');
+            shopModal.classList.add('open'); uiContainer.classList.add('blur-active');
         });
         document.getElementById('close-shop-x').addEventListener('click', () => {
-            shopModal.classList.remove('open');
-            uiContainer.classList.remove('blur-active');
+            shopModal.classList.remove('open'); uiContainer.classList.remove('blur-active');
         });
 
         function renderShop() {
-            const list = document.getElementById('shop-list');
-            list.innerHTML = ""; 
+            const list = document.getElementById('shop-list'); list.innerHTML = ""; 
             SHOP_ITEMS.forEach(item => {
                 const isOwned = ownedUpgrades.includes(item.id);
                 const isEquipped = (equippedItem === item.id);
@@ -355,16 +254,12 @@
                 let btnHtml = isEquipped ? `<button class="action-btn btn-equipped">Надето</button>` :
                               isOwned ? `<button class="action-btn btn-equip" id="eq-${item.id}">Надеть</button>` :
                               `<button class="action-btn btn-buy" id="buy-${item.id}">$${item.price}</button>`;
-                
                 el.innerHTML = `<div><h4>${item.name}</h4><p>+$${item.power}</p></div>${btnHtml}`;
                 list.appendChild(el);
-
                 if(!isEquipped && isOwned) document.getElementById(`eq-${item.id}`).onclick = () => equipItem(item.id);
                 if(!isOwned) document.getElementById(`buy-${item.id}`).onclick = () => buyItem(item);
             });
-            // Кнопка снять
-            const unequip = document.createElement('div');
-            unequip.style.textAlign='center'; unequip.style.marginTop='10px';
+            const unequip = document.createElement('div'); unequip.style.textAlign='center'; unequip.style.marginTop='10px';
             unequip.innerHTML = `<button style="background:#f44336; color:white; border:none; padding:5px 10px; border-radius:5px;">Снять всё</button>`;
             unequip.onclick = () => equipItem("none");
             list.appendChild(unequip);
@@ -383,18 +278,31 @@
             update(ref(db, 'users/' + userId), { equipped: id });
         }
 
-        // --- БОНУСЫ (ШАРИКИ) ---
+        // --- ИСПРАВЛЕННАЯ ЛОГИКА ТАЙМЕРА (КОНСОЛЬ) ---
         function startBalloonSpawner() {
             if (balloonTimerInterval) clearInterval(balloonTimerInterval);
+            
+            // Время от 60 до 180 секунд
             const waitTime = Math.floor(Math.random() * (180000 - 60000) + 60000);
+            const targetTime = Date.now() + waitTime;
+            
+            console.log("%c🎁 Таймер запущен!", "color: yellow; font-weight: bold;");
+
             balloonTimerInterval = setInterval(() => {
-                if (Date.now() > targetTime) {
+                const now = Date.now();
+                const diff = targetTime - now;
+                const secondsLeft = Math.ceil(diff / 1000);
+
+                if (diff <= 0) {
+                    clearInterval(balloonTimerInterval);
+                    console.log("%c🎁 ВРЕМЯ! Выпускаем шарик!", "color: lime; font-weight: bold; font-size: 14px;");
                     spawnBalloon();
+                    // Рекурсивный запуск следующего таймера
                     startBalloonSpawner();
-                } else console.log("⏳");
+                } else {
+                    console.log(`⏳ До подарка: ${secondsLeft} сек`);
+                }
             }, 1000);
-            var targetTime = Date.now() + waitTime;
-            console.log("🎁 Таймер запущен");
         }
 
         function spawnBalloon() {
