@@ -9,6 +9,11 @@
 </head>
 <body>
 
+    <div id="loading-overlay">
+        <div class="loader-spinner"></div>
+        <h2 style="color:white;">Загрузка данных...</h2>
+    </div>
+
     <div id="ad-modal" class="modal-overlay">
         <div class="modal-content">
             <h3>🎁 Бонус найден!</h3>
@@ -87,9 +92,11 @@
         let adsRequired = 0;
         let adsWatchedCount = 0;
         let currentReward = null;
-
-        // Глобальная переменная для таймера, чтобы можно было его очищать
         let balloonTimerInterval = null;
+
+        // Флаг полной загрузки (чтобы не багать деньги)
+        let isDataLoaded = false;
+        let isInitialLoadDone = false;
 
         // --- FIREBASE ---
         onAuthStateChanged(auth, (user) => {
@@ -106,16 +113,31 @@
                             return;
                         }
                         
+                        // Загружаем данные
                         currentMoney = parseFloat(data.money) || 0;
                         ownedUpgrades = data.upgrades || ["start"];
                         
                         recalcClickPower();
                         updateDisplay();
                         renderShop();
+
+                        // Логика отключения загрузочного экрана
+                        // Ждем минимум 1.5 секунды для красоты и безопасности
+                        if (!isInitialLoadDone) {
+                            isInitialLoadDone = true; // Данные пришли первый раз
+                            
+                            setTimeout(() => {
+                                isDataLoaded = true; // Разрешаем кликать
+                                const loader = document.getElementById('loading-overlay');
+                                if (loader) {
+                                    loader.style.opacity = '0';
+                                    setTimeout(() => loader.remove(), 500);
+                                }
+                            }, 1500); // 1.5 секунды задержка загрузки
+                        }
                     }
                 });
                 
-                // Запускаем цикл спавна подарков
                 startBalloonSpawner();
             } else {
                 window.location.href = "index.html";
@@ -134,7 +156,9 @@
 
         const clickBtn = document.getElementById('click-btn');
         clickBtn.addEventListener('click', () => {
-            if (!userId || isCooldown) return;
+            // ВАЖНО: Если данные не загрузились, клик не работает!
+            if (!userId || isCooldown || !isDataLoaded) return;
+
             isCooldown = true;
             clickBtn.classList.add('cooldown');
 
@@ -182,6 +206,7 @@
         }
 
         function buyItem(item) {
+            if (!isDataLoaded) return; // Защита покупки
             if (currentMoney >= item.price) {
                 currentMoney -= item.price;
                 let newUpgrades = [...ownedUpgrades, item.id];
@@ -198,31 +223,25 @@
         // --- ЛОГИКА ТАЙМЕРА И ШАРИКОВ ---
         
         function startBalloonSpawner() {
-            // Если таймер уже запущен - сбрасываем его
             if (balloonTimerInterval) clearInterval(balloonTimerInterval);
 
-            // Рандомное время от 60 до 180 секунд
+            // Таймер от 60 до 180 секунд
             const waitTime = Math.floor(Math.random() * (180000 - 60000) + 60000);
             const targetTime = Date.now() + waitTime;
             
             console.log("%c🎁 Таймер запущен!", "color: yellow; font-weight: bold;");
 
-            // Запускаем интервал, который тикает каждую секунду
             balloonTimerInterval = setInterval(() => {
                 const now = Date.now();
                 const diff = targetTime - now;
                 const secondsLeft = Math.ceil(diff / 1000);
 
                 if (diff <= 0) {
-                    // Время вышло!
                     clearInterval(balloonTimerInterval);
                     console.log("%c🎁 ВРЕМЯ! Выпускаем шарик!", "color: lime; font-weight: bold; font-size: 14px;");
                     spawnBalloon();
-                    
-                    // Перезапускаем цикл
                     startBalloonSpawner();
                 } else {
-                    // Просто тикаем в консоль
                     console.log(`⏳ До подарка: ${secondsLeft} сек`);
                 }
             }, 1000);
