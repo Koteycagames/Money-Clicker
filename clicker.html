@@ -27,9 +27,7 @@
             <button id="quests-btn" class="menu-btn" onclick="alert('Квесты в разработке!')"><span>📜</span> Квесты</button>
         </div>
 
-        <div class="center-stage">
-            <button id="click-btn">КЛИК</button>
-        </div>
+        <button id="click-btn">КЛИК</button>
 
         <div class="bottom-left">
             <button id="logoutBtn" class="logout-btn-small">Выйти</button>
@@ -137,12 +135,16 @@
                         recalcClickPower();
                         updateDisplay();
                         renderShop();
+                        
                         if (!isInitialLoadDone) {
                             isInitialLoadDone = true; 
                             setTimeout(() => {
                                 isDataLoaded = true;
                                 const loader = document.getElementById('loading-overlay');
-                                if (loader) { loader.style.opacity = '0'; setTimeout(() => loader.remove(), 500); }
+                                if (loader) { 
+                                    loader.classList.add('hidden'); // Добавляем класс для скрытия
+                                    setTimeout(() => loader.remove(), 500); 
+                                }
                             }, 1500);
                         }
                     }
@@ -278,7 +280,7 @@
             update(ref(db, 'users/' + userId), { equipped: id });
         }
 
-        // --- ИСПРАВЛЕННАЯ ЛОГИКА ТАЙМЕРА (КОНСОЛЬ) ---
+        // --- ТАЙМЕР ИСПРАВЛЕН ---
         function startBalloonSpawner() {
             if (balloonTimerInterval) clearInterval(balloonTimerInterval);
             
